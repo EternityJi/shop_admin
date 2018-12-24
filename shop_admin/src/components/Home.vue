@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="home1">
     这是Home页面
   </div>
 </template>
@@ -8,5 +8,8 @@ export default {
 
 }
 </script>
-<style>
+<style lang="stylus" scoped>
+  .home1{
+    color:red
+  }
 </style>

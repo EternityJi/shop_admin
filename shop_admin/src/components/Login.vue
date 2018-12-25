@@ -25,7 +25,7 @@
       <el-form-item>
         <el-button type="primary"
                    @click="login">登录</el-button>
-        <el-button @click="resetForm('ruleForm2')">重置</el-button>
+        <el-button @click="reset">重置</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -71,9 +71,10 @@ export default {
               duration: 1000
             })
             // 把token存储起来
+            console.log(res)
             localStorage.setItem('token', res.data.data.token)
-            // 编程式导航
             this.$router.push('/home')
+            // 编程式导航
           } else {
             this.$message.error(res.data.meta.msg)
           }
@@ -88,7 +89,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-html, body {
+html,body {
   width: 100%;
   height: 100%;
   background: #2d434c;
@@ -98,7 +99,6 @@ html, body {
   height: 100%;
   background-color: #2d434c;
   overflow: hidden;
-  /* padding: 75px 40px 15px 40px; */
 }
 
 img {

@@ -4,7 +4,7 @@
     <el-form :model="form"
              status-icon
              :rules="rules"
-             ref="ruleForm2"
+             ref="form"
              label-width="80px"
              class="demo-ruleForm">
       <img src="../assets/avatar.jpg"
@@ -24,7 +24,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary"
-                   @click="submitForm('ruleForm2')">提交</el-button>
+                   @click="login">登录</el-button>
         <el-button @click="resetForm('ruleForm2')">重置</el-button>
       </el-form-item>
     </el-form>
@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   data () {
     return {
@@ -41,8 +42,8 @@ export default {
       },
       rules: {
         username: [
-          { required: true, message: '用户名不能为空', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, message: '用户名不能为空', trigger: 'change' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
         ],
         password: [
           { required: true, message: '密码不能为空', trigger: 'blur' },
@@ -52,38 +53,72 @@ export default {
     }
   },
   methods: {
-    submitForm (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          alert('submit!')
-        } else {
-          console.log('error submit!!')
-          return false
-        }
+    login () {
+      this.$refs.form.validate(valid => {
+        if (!valid) return false
+        // 发送ajax请求
+        axios({
+          method: 'post',
+          url: 'http://localhost:8888/api/private/v1/login',
+          data: this.form
+        }).then(res => {
+          console.log(res)
+          console.log(this.form)
+          if (res.data.meta.status === 200) {
+            this.$message({
+              message: '登陆成功了',
+              type: 'success',
+              duration: 1000
+            })
+            // 把token存储起来
+            localStorage.setItem('token', res.data.data.token)
+            // 编程式导航
+            this.$router.push('/home')
+          } else {
+            this.$message.error(res.data.meta.msg)
+          }
+        })
       })
     },
-    resetForm (formName) {
-      this.$refs[formName].resetFields()
+    reset () {
+      this.$refs.form.resetFields()
     }
   }
 }
 </script>
 
-<style >
-html,
-body {
+<style lang="stylus" scoped>
+html, body {
   width: 100%;
   height: 100%;
   background: #2d434c;
 }
+
 .wrapper {
-  width: 480px;
-  height: 276px;
-  background: #fff;
-  margin: 0 auto;
-  padding: 75px 40px 15px 40px;
+  height: 100%;
+  background-color: #2d434c;
+  overflow: hidden;
+  /* padding: 75px 40px 15px 40px; */
 }
-img{
-      border-radius: 50%;
-  }
+
+img {
+  border-radius: 50%;
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 10px solid #fff;
+}
+
+.el-form {
+  width: 400px;
+  margin: 200px auto;
+  background-color: #fff;
+  padding: 75px 40px 15px;
+  position: relative;
+}
+
+.el-button + .el-button {
+  margin-left: 80px;
+}
 </style>

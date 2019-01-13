@@ -2,9 +2,15 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
 import Login from '@/components/Login'
+import Users from '@/components/Users'
+import Roles from '@/components/rights/Roles'
+import Rights from '@/components/rights/Rights'
+import Categories from '@/components/products/Categories'
+import Goods from '@/components/products/Goods'
+import Params from '@/components/products/Params'
 
 Vue.use(Router)
-
+// 1 如何配置嵌套路由  用children属性
 const router = new Router({
   routes: [{
     path: '/',
@@ -12,12 +18,38 @@ const router = new Router({
   },
   {
     path: '/home',
-    component: Home
+    component: Home,
+    children: [{
+      path: '/users',
+      component: Users
+    },
+    {
+      path: '/roles',
+      component: Roles
+    },
+    {
+      path: '/rights',
+      component: Rights
+    },
+    {
+      path: '/categories',
+      component: Categories
+    },
+    {
+      path: '/goods',
+      component: Goods
+    },
+    {
+      path: '/params',
+      component: Params
+    }
+    ]
   },
   {
     path: '/login',
     component: Login
   }
+
   ]
 })
 // router.beforeEach((to, from, next) => {

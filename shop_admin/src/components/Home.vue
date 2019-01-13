@@ -13,52 +13,79 @@
     </el-header>
     <el-container>
       <el-aside width="200px">
-        <el-row class="tac">
-          <el-col >
-            <el-menu default-active="2"
-                     class="el-menu-vertical-demo"
-                     @open="handleOpen"
-                     @close="handleClose"
-                     background-color="#545c64"
-                     text-color="#fff"
-                     active-text-color="#ffd04b">
-              <el-submenu index="1">
-                <template slot="title">
-                  <i class="el-icon-location"></i>
-                  <span>导航一</span>
-                </template>
-                <el-menu-item-group >
-                  <el-menu-item>选项3</el-menu-item>
-                </el-menu-item-group>
-              </el-submenu>
-            </el-menu>
-          </el-col>
-        </el-row>
+        <!--
+           router
+         -->
+        <el-menu :default-active="$route.path.slice(1)"
+                 class="el-menu-vertical-demo"
+                 background-color="#545c64"
+                 text-color="#fff"
+                 active-text-color="#ffd04b"
+                 unique-opened
+                 router>
+          <!-- 第一个 -->
+          <el-submenu :index="v.path"
+                      v-for=" v in menusList"
+                      :key="v.id">
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>{{ v.authName }}</span>
+            </template>
+            <el-menu-item v-for="l2 in v.children"
+                          :key="l2.id"
+                          :index="l2.path">
+              <i class="el-icon-menu"></i>
+              <span slot="title"> {{ l2.authName }}</span>
+            </el-menu-item>
+          </el-submenu>
+        </el-menu>
       </el-aside>
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view />
+      </el-main>
     </el-container>
   </el-container>
 </template>
 <script>
 export default {
+  data () {
+    return {
+      menusList: []
+    }
+  },
   methods: {
+    // 左侧菜单渲染
+    async menus () {
+      let res = await this.axios.get('/menus')
+      // console.log(res)
+      if (res.meta.status === 200) {
+        this.menusList = res.data
+        // console.log(this.menusList)
+      }
+    },
     // 退出
-    logout () {
+    async logout () {
       // 移token
-      this.$confirm('您确定要退出吗', '温馨提示', {
-        // confirmButtonText: '确定',
-        // cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // 点确定
+      try {
+        await this.$confirm('您确定要退出吗', '温馨提示', {
+          // confirmButtonText: '确定',
+          // cancelButtonText: '取消',
+          type: 'warning'
+        })
         localStorage.removeItem('token')
         this.$router.push('/login')
         this.$message.success('退出成功')
-      }).catch(() => {
-        // 点取消
-        this.$message.info('取消退出')
-      })
+      } catch (e) {
+        this.$message.info('取消删除')
+      }
     }
+
+  },
+  created () {
+    this.menus()
+    console.log(this.$router)
+    console.log(this.$route)
+    console.log(this.$route.path)
   }
 }
 //  使用别名要加~ 绝对路径
@@ -66,11 +93,6 @@ export default {
 // h1 页面中只能有一个
 </script>
 <style lang="stylus" scoped>
-* {
-  margin: 0;
-  padding: 0;
-}
-
 .home {
   height: 100%;
 
@@ -80,7 +102,6 @@ export default {
 
     .logo {
       width: 180px;
-      background-image: url('~@/assets/logo.png');
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center center;
@@ -107,7 +128,22 @@ export default {
         text-align: center;
         color: #fff;
         font-size: 30px;
+        margin: 0;
+        padding: 0;
       }
+    }
+  }
+
+  .el-container {
+    height: 100%;
+
+    .el-aside {
+      background-color: #555566;
+      height: 100%;
+    }
+
+    .el-main {
+      background: #d4dfe4;
     }
   }
 }

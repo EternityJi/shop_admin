@@ -4,6 +4,7 @@
   padding: 0;
   list-style: none;
 }
+
 html,
 body {
   height: 100%;
@@ -16,4 +17,10 @@ body {
 .el-breadcrumb {
   height: 30px;
   line-height: 30px;
+}
+
+.txt-one {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis
 }
